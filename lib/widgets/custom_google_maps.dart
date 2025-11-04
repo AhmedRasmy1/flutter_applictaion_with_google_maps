@@ -12,23 +12,54 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
   late CameraPosition initialCameraPosition;
   @override
   void initState() {
-    super.initState();
     initialCameraPosition = const CameraPosition(
       target: LatLng(28.5036, 30.8008),
       zoom: 12,
     );
+    initMapStyle();
+    super.initState();
   }
 
+  late GoogleMapController mapController;
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      initialCameraPosition: initialCameraPosition,
-      cameraTargetBounds: CameraTargetBounds(
-        LatLngBounds(
-          southwest: LatLng(28.4900, 30.7900),
-          northeast: LatLng(28.5200, 30.8100),
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: initialCameraPosition,
+          mapType: MapType.hybrid,
+          zoomControlsEnabled: false,
+          onMapCreated: (controller) {
+            mapController = controller;
+          },
+          // cameraTargetBounds: CameraTargetBounds(
+          //   LatLngBounds(
+          //     southwest: LatLng(28.4900, 30.7900),
+          //     northeast: LatLng(28.5200, 30.8100),
+          //   ),
+          // ),
         ),
-      ),
+
+        Positioned(
+          left: 16,
+          bottom: 16,
+          right: 16,
+          child: ElevatedButton(
+            onPressed: () {
+              CameraPosition newLocation = const CameraPosition(
+                target: LatLng(28.4976, 30.8038),
+                zoom: 15,
+              );
+              mapController.animateCamera(
+                CameraUpdate.newCameraPosition(newLocation),
+              );
+            },
+            child: const Text('My Location'),
+          ),
+        ),
+      ],
     );
   }
+
+  void initMapStyle() {}
 }

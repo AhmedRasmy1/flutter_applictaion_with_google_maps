@@ -11,10 +11,8 @@ class GoogleMapsWithFlutter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Google Maps with Flutter')),
-        body: const CustomGoogleMaps(),
-      ),
+      debugShowCheckedModeBanner: false,
+      home: SafeArea(child: Scaffold(body: const CustomGoogleMaps())),
     );
   }
 }
