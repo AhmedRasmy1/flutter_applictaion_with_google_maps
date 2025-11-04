@@ -16,7 +16,6 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
       target: LatLng(28.5036, 30.8008),
       zoom: 12,
     );
-    initMapStyle();
     super.initState();
   }
 
@@ -27,10 +26,11 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
       children: [
         GoogleMap(
           initialCameraPosition: initialCameraPosition,
-          mapType: MapType.hybrid,
+          mapType: MapType.normal,
           zoomControlsEnabled: false,
           onMapCreated: (controller) {
             mapController = controller;
+            initMapStyle();
           },
           // cameraTargetBounds: CameraTargetBounds(
           //   LatLngBounds(
@@ -46,13 +46,13 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
           right: 16,
           child: ElevatedButton(
             onPressed: () {
-              CameraPosition newLocation = const CameraPosition(
-                target: LatLng(28.4976, 30.8038),
-                zoom: 15,
-              );
-              mapController.animateCamera(
-                CameraUpdate.newCameraPosition(newLocation),
-              );
+              // CameraPosition newLocation = const CameraPosition(
+              //   target: LatLng(28.4976, 30.8038),
+              //   zoom: 15,
+              // );
+              // mapController.animateCamera(
+              //   CameraUpdate.newCameraPosition(newLocation),
+              // );
             },
             child: const Text('My Location'),
           ),
@@ -61,5 +61,10 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
     );
   }
 
-  void initMapStyle() {}
+  void initMapStyle() async {
+    var nightMapStyle = await DefaultAssetBundle.of(
+      context,
+    ).loadString('assets/map_styles/night_map_style.json');
+    mapController.setMapStyle(nightMapStyle);
+  }
 }
