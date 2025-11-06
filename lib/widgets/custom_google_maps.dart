@@ -72,16 +72,24 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
     mapController.setMapStyle(nightMapStyle);
   }
 
-  void initMarkers() {
+  void initMarkers() async {
+    BitmapDescriptor customMarkerIcon = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(),
+      "assets/images/map_marker.png",
+    );
+
     var myMarkers = places
         .map(
           (placesModel) => Marker(
             markerId: MarkerId(placesModel.id.toString()),
             position: placesModel.latLng,
+            infoWindow: InfoWindow(title: placesModel.name),
+            icon: customMarkerIcon,
           ),
         )
         .toSet();
 
     markers.addAll(myMarkers);
+    setState(() {});
   }
 }
