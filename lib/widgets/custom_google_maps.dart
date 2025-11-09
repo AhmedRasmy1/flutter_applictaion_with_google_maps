@@ -4,6 +4,8 @@ import 'package:flutter_applictaion_with_google_maps/models/place_models.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 
+import 'package:location/location.dart';
+
 class CustomGoogleMaps extends StatefulWidget {
   const CustomGoogleMaps({super.key});
 
@@ -13,16 +15,19 @@ class CustomGoogleMaps extends StatefulWidget {
 
 class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
   late CameraPosition initialCameraPosition;
+  late Location location;
   @override
   void initState() {
     initialCameraPosition = const CameraPosition(
       target: LatLng(28.5036, 30.8008),
       zoom: 9,
     );
-    initMarkers();
-    initPolylines();
-    initPolygones();
-    initCircles();
+    location = Location();
+    updataMylocation();
+    // initMarkers();
+    // initPolylines();
+    // initPolygones();
+    // initCircles();
     super.initState();
   }
 
@@ -81,6 +86,44 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
       context,
     ).loadString('assets/map_styles/night_map_style.json');
     mapController.setMapStyle(nightMapStyle);
+  }
+
+  Future<void> checkAndRequestLocationService() async {
+    var isEnabledService = await location.serviceEnabled();
+    if (!isEnabledService) {
+      await location.requestService();
+      if (!isEnabledService) {
+        //! show some message to user
+        return;
+      }
+    }
+  }
+
+  Future<bool> checkAndRequestLocationPermission() async {
+    var permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.deniedForever) {
+      return false;
+    }
+    if (permissionStatus == PermissionStatus.denied) {
+      permissionStatus = await location.requestPermission();
+
+      if (permissionStatus != PermissionStatus.granted) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void getLocationData() {
+    location.onLocationChanged.listen((locationData) {});
+  }
+
+  void updataMylocation() async {
+    await checkAndRequestLocationService();
+    var hasPermission = await checkAndRequestLocationPermission();
+    if (hasPermission) {
+      getLocationData();
+    }
   }
 
   Future<Uint8List> getImageFromRawData(String image, double width) async {
