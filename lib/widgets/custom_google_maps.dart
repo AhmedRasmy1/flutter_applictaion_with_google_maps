@@ -17,19 +17,28 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
   void initState() {
     initialCameraPosition = const CameraPosition(
       target: LatLng(28.5036, 30.8008),
-      zoom: 12,
+      zoom: 9,
     );
     initMarkers();
+    initPolylines();
+    initPolygones();
+    initCircles();
     super.initState();
   }
 
   Set<Marker> markers = {};
+  Set<Polyline> polylines = {};
+  Set<Polygon> polygons = {};
+  Set<Circle> circles = {};
   late GoogleMapController mapController;
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         GoogleMap(
+          circles: circles,
+          polylines: polylines,
+          polygons: polygons,
           markers: markers,
           initialCameraPosition: initialCameraPosition,
           mapType: MapType.normal,
@@ -46,23 +55,23 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
           // ),
         ),
 
-        Positioned(
-          left: 16,
-          bottom: 16,
-          right: 16,
-          child: ElevatedButton(
-            onPressed: () {
-              // CameraPosition newLocation = const CameraPosition(
-              //   target: LatLng(28.4976, 30.8038),
-              //   zoom: 15,
-              // );
-              // mapController.animateCamera(
-              //   CameraUpdate.newCameraPosition(newLocation),
-              // );
-            },
-            child: const Text('My Location'),
-          ),
-        ),
+        // Positioned(
+        //   left: 16,
+        //   bottom: 16,
+        //   right: 16,
+        //   child: ElevatedButton(
+        //     onPressed: () {
+        //       CameraPosition newLocation = const CameraPosition(
+        //         target: LatLng(28.4976, 30.8038),
+        //         zoom: 15,
+        //       );
+        //       mapController.animateCamera(
+        //         CameraUpdate.newCameraPosition(newLocation),
+        //       );
+        //     },
+        //     child: const Text('My Location'),
+        //   ),
+        // ),
       ],
     );
   }
@@ -89,7 +98,7 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
 
   void initMarkers() async {
     BitmapDescriptor customMarkerIcon = BitmapDescriptor.fromBytes(
-      await getImageFromRawData("assets/images/map_marker.png", 200),
+      await getImageFromRawData("assets/images/map_marker.png", 100),
     );
 
     var myMarkers = places
@@ -105,5 +114,40 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
 
     markers.addAll(myMarkers);
     setState(() {});
+  }
+
+  void initPolylines() {
+    Polyline polyline = Polyline(
+      polylineId: PolylineId('1'),
+      points: [
+        LatLng(28.497577444185065, 30.798768856059553),
+        LatLng(28.498152605585627, 30.798704483042357),
+        LatLng(28.498435047746746, 30.797629083348788),
+      ],
+    );
+    polylines.add(polyline);
+  }
+
+  void initPolygones() {
+    Polygon polygon = Polygon(
+      strokeWidth: 3,
+      fillColor: Colors.black.withOpacity(0.6),
+      polygonId: PolygonId('1'),
+      points: [
+        LatLng(28.50466791769032, 30.798407434727466),
+        LatLng(28.50249556954353, 30.801348554366495),
+        LatLng(28.499609607104244, 30.79492500469991),
+      ],
+    );
+    polygons.add(polygon);
+  }
+
+  void initCircles() {
+    Circle circle = Circle(
+      circleId: CircleId("1"),
+      center: LatLng(28.502784621141846, 30.801001576601536),
+      radius: 5000,
+    );
+    circles.add(circle);
   }
 }
