@@ -35,7 +35,7 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
   Set<Polyline> polylines = {};
   Set<Polygon> polygons = {};
   Set<Circle> circles = {};
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -85,7 +85,7 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
     var nightMapStyle = await DefaultAssetBundle.of(
       context,
     ).loadString('assets/map_styles/night_map_style.json');
-    mapController.setMapStyle(nightMapStyle);
+    mapController!.setMapStyle(nightMapStyle);
   }
 
   Future<void> checkAndRequestLocationService() async {
@@ -115,7 +115,21 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
   }
 
   void getLocationData() {
-    location.onLocationChanged.listen((locationData) {});
+    location.onLocationChanged.listen((locationData) {
+      var cameraPosition = CameraPosition(
+        target: LatLng(locationData.latitude!, locationData.longitude!),
+        zoom: 15,
+      );
+      var myCurrentLocationMarker = Marker(
+        markerId: MarkerId("my_location_marker"),
+        position: LatLng(locationData.latitude!, locationData.longitude!),
+      );
+      setState(() {});
+      markers.add(myCurrentLocationMarker);
+      mapController?.animateCamera(
+        CameraUpdate.newCameraPosition(cameraPosition),
+      );
+    });
   }
 
   void updataMylocation() async {
@@ -139,25 +153,25 @@ class _CustomGoogleMapsState extends State<CustomGoogleMaps> {
     return imageByteData!.buffer.asUint8List();
   }
 
-  void initMarkers() async {
-    BitmapDescriptor customMarkerIcon = BitmapDescriptor.fromBytes(
-      await getImageFromRawData("assets/images/map_marker.png", 100),
-    );
+  // void initMarkers() async {
+  //   BitmapDescriptor customMarkerIcon = BitmapDescriptor.fromBytes(
+  //     await getImageFromRawData("assets/images/map_marker.png", 100),
+  //   );
 
-    var myMarkers = places
-        .map(
-          (placesModel) => Marker(
-            markerId: MarkerId(placesModel.id.toString()),
-            position: placesModel.latLng,
-            infoWindow: InfoWindow(title: placesModel.name),
-            icon: customMarkerIcon,
-          ),
-        )
-        .toSet();
+  //   var myMarkers = places
+  //       .map(
+  //         (placesModel) => Marker(
+  //           markerId: MarkerId(placesModel.id.toString()),
+  //           position: placesModel.latLng,
+  //           infoWindow: InfoWindow(title: placesModel.name),
+  //           icon: customMarkerIcon,
+  //         ),
+  //       )
+  //       .toSet();
 
-    markers.addAll(myMarkers);
-    setState(() {});
-  }
+  //   markers.addAll(myMarkers);
+  //   setState(() {});
+  // }
 
   void initPolylines() {
     Polyline polyline = Polyline(
